@@ -11,7 +11,7 @@ document.getElementById('ok-button').addEventListener('click', function() {
     container.appendChild(message);
 
     const image = document.createElement('img');
-    image.src = 'https://example.com/frog-rocket.jpg'; // Replace with the actual image URL
+    image.src = 'flying-frog.png'; 
     image.alt = 'Frog riding a rocket';
     image.style.display = 'block';
     container.appendChild(image);
