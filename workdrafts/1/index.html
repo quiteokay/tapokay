@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ad It Up</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #CCF8EA;
+      transition: background-color 0.8s ease-in-out;
+    }
+
+    .content-wrapper {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .image-section {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .image-section img {
+      width: 100%;
+      max-width: 320px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .text-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .text-section h1 {
+      margin-bottom: 1rem;
+      font-size: 2rem;
+      font-weight: 600;
+    }
+
+    .text-section p {
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      color: #555;
+    }
+
+    #qrcode {
+      margin-top: 1rem;
+    }
+
+    .store-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .store-buttons a img {
+      height: 60px;
+      transition: transform 0.2s ease, filter 0.3s ease;
+    }
+
+    .store-buttons a img:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .content-wrapper {
+        flex-direction: column;
+        max-width: 90%;
+      }
+
+      .image-section, .text-section {
+        flex: none;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="content-wrapper">
+    <div class="image-section">
+      <img id="carrier-img" src="img/generic.jpg" alt="Ad It Up Promo Image" />
+    </div>
+    <div class="text-section">
+      <div>
+        <h1>Get Started with Ad It Up</h1>
+        <p id="qr-instruction">Scan this QR code with your phone to download the app.</p>
+      </div>
+      <div id="qrcode"></div>
+      <div class="store-buttons">
+        <a id="googlePlayButton" href="#" target="_blank" class="hidden">
+          <img src="img/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" />
+        </a>
+        <a id="appStoreButton" href="#" target="_blank" class="hidden">
+          <img src="img/Download_on_the_App_Store_Badge.svg" alt="Download on the App Store" />
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const linkParam = urlParams.get('link');
+      const qrcodeDiv = document.getElementById('qrcode');
+      const qrInstruction = document.getElementById('qr-instruction');
+      const googlePlayButton = document.getElementById('googlePlayButton');
+      const appStoreButton = document.getElementById('appStoreButton');
+      const carrierImg = document.getElementById('carrier-img');
+
+      let carrier = null;
+      let utm_source = null;
+      let deeplink_value = null;
+      let ios_custom_page = null;
+
+      if (linkParam) {
+        // Generate QR Code
+        new QRCode(qrcodeDiv, {
+          text: linkParam,
+          width: 256,
+          height: 256,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.L
+        });
+
+        const slug = linkParam.split('/6rK4/')[1] || '';
+        if (slug.startsWith('cricket')) {
+          carrier = 'cricket';
+          const suffix = slug.substring('cricket'.length);
+          utm_source = `cricket-${suffix}`;
+          deeplink_value = `cricket-${suffix}`;
+          ios_custom_page = 'a8cc5d4d-f90f-4854-aa5c-d22269195191';
+          carrierImg.src = "img/cricket.jpg";
+          document.body.style.backgroundColor = '#EAF7E2';
+        } else if (slug.startsWith('metro')) {
+          carrier = 'metro';
+          const suffix = slug.substring('metro'.length);
+          utm_source = `metro-${suffix}`;
+          deeplink_value = `metro-${suffix}`;
+          ios_custom_page = 'a7893bb4-6197-473b-b111-5f5ef332f924';
+          carrierImg.src = "img/metro.jpg";
+          document.body.style.backgroundColor = '#EDE2F6';
+        } else {
+          carrier = null;
+          utm_source = linkParam;
+          deeplink_value = null;
+          ios_custom_page = null;
+          carrierImg.src = "img/generic.jpg";
+          document.body.style.backgroundColor = '#CCF8EA';
+        }
+
+        // Update Google Play URL
+        let googlePlayUrl = `https://play.google.com/store/apps/details?id=com.adfone.aditup`;
+        if (carrier && utm_source) {
+          googlePlayUrl += `&listing=${carrier}&referrer=utm_source%3D${encodeURIComponent(utm_source)}`;
+        }
+        googlePlayButton.href = googlePlayUrl;
+        googlePlayButton.classList.remove('hidden');
+
+        // Update App Store URL
+        let appStoreUrl = `https://apps.apple.com/us/app/ad-it-up-save-on-your-bills/id6737984094`;
+        if (ios_custom_page) {
+          appStoreUrl += `?ppid=${ios_custom_page}`;
+        }
+        appStoreButton.href = appStoreUrl;
+        appStoreButton.classList.remove('hidden');
+      } else {
+        qrcodeDiv.innerHTML = '';
+        qrInstruction.textContent = '';
+        googlePlayButton.href = "https://play.google.com/store/apps/details?id=com.adfone.aditup";
+        appStoreButton.href = "https://apps.apple.com/us/app/ad-it-up-save-on-your-bills/id6737984094";
+        googlePlayButton.classList.remove('hidden');
+        appStoreButton.classList.remove('hidden');
+        carrierImg.src = "img/generic.jpg";
+        document.body.style.backgroundColor = '#CCF8EA';
+      }
+    });
+  </script>
+</body>
+</html>
