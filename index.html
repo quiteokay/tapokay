@@ -1,83 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" type="image/png" href="/icon.png">
   <meta name="apple-mobile-web-app-title" content="TapOkay">
   <link rel="apple-touch-icon" href="/icon.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tap Okay to Open Number in WhatsApp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       padding: 20px;
-      font-family: Arial, sans-serif;
-      background-color: #f0f8ff;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #128C7E 0%, #24D366 100%);
+      min-height: 100vh;
+      color: #333;
     }
 
     .container {
       text-align: center;
-      max-width: 300px;
+      max-width: 400px;
       margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 32px 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    }
+
+    h2 {
+      color: #075E54;
+      margin: 0 0 24px 0;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
     }
 
     button {
-      background-color: #007bff;
+      background: linear-gradient(135deg, #25D366 0%, #24D366 100%);
       color: white;
       border: none;
-      border-radius: 50px;
-      padding: 20px 40px;
-      font-size: 24px;
+      border-radius: 12px;
+      padding: 16px 32px;
+      font-size: 18px;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
+      width: 100%;
+      font-family: inherit;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3);
     }
 
     button:active {
-      transform: scale(0.95);
+      transform: translateY(0);
+    }
+
+    button:focus {
+      outline: 3px solid rgba(37, 211, 102, 0.4);
+      outline-offset: 2px;
     }
 
     input[type="text"] {
-      padding: 1rem;
-      font-size: 1.1rem;
+      padding: 16px;
+      font-size: 16px;
       width: 100%;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
+      border-radius: 12px;
+      border: 2px solid #E5E7EB;
+      font-family: inherit;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #25D366;
+      box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
     }
 
     #searchInput {
-      margin-top: 40px;
-      padding: 0.5rem;
-      font-size: 1rem;
+      margin-top: 32px;
+      padding: 12px 16px;
+      font-size: 15px;
       width: 100%;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+      border: 2px solid #E5E7EB;
+      border-radius: 12px;
+      font-family: inherit;
+      background: white;
+    }
+
+    #searchInput:focus {
+      outline: none;
+      border-color: #25D366;
+      box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
     }
 
     .country-codes {
-      margin-top: 10px;
-      font-size: 12px;
-      color: #aaa;
-      line-height: 1.6;
-      white-space: pre-wrap;
-      cursor: pointer;
+      margin-top: 16px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      max-height: 400px;
+      overflow-y: auto;
     }
 
     .country-line {
       display: block;
-      padding: 4px 0;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+      border-bottom: 1px solid #F3F4F6;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .country-line:last-child {
+      border-bottom: none;
     }
 
     .country-line:hover {
-      background-color: #e0f0ff;
+      background-color: #F0FDF4;
+    }
+
+    .country-line:focus {
+      outline: 2px solid #25D366;
+      outline-offset: -2px;
+      background-color: #F0FDF4;
     }
 
     .section-label {
-      font-weight: bold;
-      margin-top: 1em;
-      color: #555;
+      font-weight: 600;
+      padding: 16px 16px 8px 16px;
+      color: #075E54;
       font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: #F9FAFB;
+      border-bottom: 1px solid #E5E7EB;
+    }
+
+    .help-text {
+      color: #6B7280;
+      font-size: 14px;
+      margin-top: 8px;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 8px;
+      text-align: left;
+      font-size: 15px;
+    }
+
+    /* Scrollbar styling */
+    .country-codes::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .country-codes::-webkit-scrollbar-track {
+      background: #F3F4F6;
+    }
+
+    .country-codes::-webkit-scrollbar-thumb {
+      background: #D1D5DB;
+      border-radius: 3px;
+    }
+
+    .country-codes::-webkit-scrollbar-thumb:hover {
+      background: #9CA3AF;
+    }
+
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+      body {
+        background: #000;
+        color: #fff;
+      }
+      
+      .container {
+        background: #fff;
+        border: 2px solid #000;
+      }
+      
+      button {
+        background: #000;
+        border: 2px solid #fff;
+      }
+    }
+
+    /* Reduced motion support */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
@@ -85,34 +224,44 @@
   <div class="container">
     <form onsubmit="goToWhatsApp(event)">
       <h2>Open in WhatsApp</h2>
-      <input
-  type="text"
-  id="phoneInput"
-  placeholder="+1 (832) 555-1234"
-  autocomplete="off"
-  style="padding: 1rem; font-size: 1.1rem; width: 100%; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box;"
-/>
-<small style="color: #888; display: block; margin-top: 5px;">
-  Don't worry about characters and spaces +(≧◡≦)+
-</small><br />
-      <button type="submit" id="ok-button">OK</button>
+      
+      <div class="form-group">
+        <label for="phoneInput">Enter Phone Number</label>
+        <input
+          type="text"
+          id="phoneInput"
+          placeholder="+1 (832) 555-1234"
+          autocomplete="tel"
+          aria-describedby="phone-help"
+        />
+        <div id="phone-help" class="help-text">
+          Don't worry about formatting! ✨
+        </div>
+      </div>
+      
+      <button type="submit" id="ok-button" aria-describedby="button-help">
+        OK
+      </button>
     </form>
   </div>
 
-  <input
-    type="text"
-    id="searchInput"
-    placeholder="Search countries..."
-  />
+  <div style="max-width: 400px; margin: 0 auto;">
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search countries..."
+      aria-describedby="search-help"
+    />
 
-  <div id="countryList" class="country-codes"></div>
+    <div id="countryList" class="country-codes" role="listbox" aria-label="Country codes"></div>
+  </div>
 
   <script>
     const phoneInput = document.getElementById("phoneInput");
     const countryListDiv = document.getElementById("countryList");
     const searchInput = document.getElementById("searchInput");
 
-     const countries = [
+    const countries = [
       "Afghanistan +93", "Albania +355", "Algeria +213", "Andorra +376", "Angola +244",
       "Antigua and Barbuda +1-268", "Argentina +54", "Armenia +374", "Australia +61", "Austria +43",
       "Azerbaijan +994", "Bahamas +1-242", "Bahrain +973", "Bangladesh +880", "Barbados +1-246",
@@ -155,16 +304,17 @@
       "Vietnam +84", "Yemen +967", "Zambia +260", "Zimbabwe +263"
     ];
 
-
     function goToWhatsApp(event) {
       event.preventDefault();
       const rawInput = phoneInput.value;
       const cleaned = rawInput.replace(/[^\d]/g, "");
       if (cleaned.length < 7) {
-        alert("Please enter a valid phone number.");
+        alert("Please enter a valid phone number with at least 7 digits.");
+        phoneInput.focus();
         return;
       }
-      window.location.href = `https://wa.me/${cleaned}`;
+      // Open in new window/tab
+      window.open(`https://wa.me/${cleaned}`, '_blank', 'noopener,noreferrer');
     }
 
     function extractCode(entry) {
@@ -177,7 +327,7 @@
       phoneInput.focus();
       if (countryName) {
         updateRecent(countryName);
-        displayCountries(searchInput.value.trim());
+        // Keep the list visible - don't refresh the display
       }
     }
 
@@ -192,8 +342,8 @@
       const recentEntries = recent.map(r => countries.find(c => c.startsWith(r))).filter(Boolean);
 
       const filtered = countries.filter(c =>
-        c.toLowerCase().startsWith(filter.toLowerCase()) &&
-        !recent.includes(c.split(" +")[0])
+        c.toLowerCase().includes(filter.toLowerCase()) &&
+        !recent.some(recentCountry => c.startsWith(recentCountry))
       );
 
       let html = "";
@@ -201,16 +351,23 @@
       if (!filter && recentEntries.length) {
         html += `<div class="section-label">Recent</div>`;
         html += recentEntries.map(c =>
-          `<span class="country-line" onclick="insertCode('${extractCode(c)}', '${c.split(' +')[0]}')">${c}</span>`
+          `<div class="country-line" tabindex="0" role="option" onclick="insertCode('${extractCode(c)}', '${c.split(' +')[0]}')" onkeydown="handleKeyDown(event, '${extractCode(c)}', '${c.split(' +')[0]}')">${c}</div>`
         ).join("");
         html += `<div class="section-label">All Countries</div>`;
       }
 
       html += filtered.map(c =>
-        `<span class="country-line" onclick="insertCode('${extractCode(c)}', '${c.split(' +')[0]}')">${c}</span>`
+        `<div class="country-line" tabindex="0" role="option" onclick="insertCode('${extractCode(c)}', '${c.split(' +')[0]}')" onkeydown="handleKeyDown(event, '${extractCode(c)}', '${c.split(' +')[0]}')">${c}</div>`
       ).join("");
 
       countryListDiv.innerHTML = html;
+    }
+
+    function handleKeyDown(event, code, countryName) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        insertCode(code, countryName);
+      }
     }
 
     searchInput.addEventListener("input", () => {
@@ -220,8 +377,9 @@
     searchInput.addEventListener("keydown", e => {
       if (e.key === "Enter") {
         e.preventDefault();
+        const filter = searchInput.value.trim().toLowerCase();
         const filtered = countries.filter(c =>
-          c.toLowerCase().startsWith(searchInput.value.trim().toLowerCase())
+          c.toLowerCase().includes(filter)
         );
         if (filtered.length > 0) {
           insertCode(extractCode(filtered[0]), filtered[0].split(" +")[0]);
@@ -237,9 +395,8 @@
       }
     });
 
+    // Initialize the country list
     displayCountries();
   </script>
 </body>
 </html>
-
-
