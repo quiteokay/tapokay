@@ -6,12 +6,13 @@
 <meta name="robots" content="noindex">
 <title>tap okay</title>
 <meta name="theme-color" content="#151a1c">
-<link rel="icon" type="image/png" href="/app_icon_707.png">
-<link rel="apple-touch-icon" href="/app_icon_707.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
+<link rel="apple-touch-icon" href="/icon-180.png">
 <meta name="apple-mobile-web-app-title" content="tap okay">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Pinyon+Script&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* An old garden wall at dusk, grown over with ivy. One stone is carved "okay". Single look on purpose. */
 :root {
@@ -27,7 +28,8 @@
 }
 html, body { height: 100%; }
 body { margin: 0; background: var(--night); color: var(--ink); font-family: var(--font-body); overflow: hidden; }
-canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 0.7s ease; }
+canvas.on { opacity: 1; }
 #okay {
   position: absolute; border: 0; padding: 0; margin: 0; background: transparent; cursor: pointer;
   border-radius: 6px; -webkit-tap-highlight-color: transparent;
@@ -71,7 +73,7 @@ label input { accent-color: var(--brass); width: 16px; height: 16px; margin: 0; 
 .shake { animation: shake 0.38s ease; }
 @keyframes shake { 20%, 60% { margin-left: -8px; } 40%, 80% { margin-left: 8px; } }
 @media (prefers-reduced-motion: reduce) {
-  form#gate, .veil, #okay::after { transition: none; }
+  form#gate, .veil, #okay::after, canvas { transition: none; }
   .shake { animation: none; }
 }
 </style>
@@ -211,14 +213,32 @@ label input { accent-color: var(--brass); width: 16px; height: 16px; margin: 0; 
       });
     });
 
-    // carve "okay"
+    // moss on one stone has grown into the shape of "okay"
     if (okayRect) {
-      var fs = Math.min(okayRect.h * 0.62, okayRect.w * 0.34);
-      g.font = "italic 600 " + fs + "px " + getComputedStyle(document.documentElement).getPropertyValue("--font-carve");
-      g.textAlign = "center"; g.textBaseline = "middle";
-      var tx = okayRect.x + okayRect.w / 2, ty = okayRect.y + okayRect.h / 2 + fs * 0.04;
-      g.fillStyle = "rgba(255,248,232,0.10)"; g.fillText("okay", tx + 0.9 * S, ty + 1.1 * S);
-      g.fillStyle = "rgba(20,16,10,0.30)"; g.fillText("okay", tx, ty);
+      var mw = Math.ceil(okayRect.w), mh = Math.ceil(okayRect.h);
+      var mc = document.createElement("canvas"); mc.width = mw; mc.height = mh;
+      var mg = mc.getContext("2d");
+      var fs = Math.min(mh * 0.95, mw * 0.42);
+      mg.font = fs + "px 'Pinyon Script', 'Snell Roundhand', cursive";
+      mg.textAlign = "center"; mg.textBaseline = "middle";
+      mg.fillStyle = "#000"; mg.fillText("okay", mw / 2, mh / 2 + fs * 0.08);
+      var px = mg.getImageData(0, 0, mw, mh).data;
+      var MR = rng(808);
+      for (var yy = 0; yy < mh; yy += 1) {
+        for (var xx = 0; xx < mw; xx += 1) {
+          if (px[(yy * mw + xx) * 4 + 3] < 110 || MR() > 0.55) continue;
+          var gx = okayRect.x + xx + (MR() - 0.5) * 1.6, gy = okayRect.y + yy + (MR() - 0.5) * 1.6;
+          g.fillStyle = "hsla(" + (78 + MR() * 30) + "," + (30 + MR() * 20) + "%," + (24 + MR() * 16) + "%," + (0.35 + MR() * 0.4) + ")";
+          g.beginPath(); g.arc(gx, gy, (0.55 + MR() * 0.8) * Math.max(S, 0.8), 0, 7); g.fill();
+        }
+      }
+      // a soft halo of loose moss so the edges blur into the stone
+      for (var q = 0; q < mw * mh / 30; q++) {
+        var hx = MR() * mw | 0, hy = MR() * mh | 0;
+        if (px[(hy * mw + hx) * 4 + 3] > 0) continue;
+        g.fillStyle = "hsla(" + (80 + MR() * 25) + ",28%,26%," + (MR() * 0.18) + ")";
+        g.beginPath(); g.arc(okayRect.x + hx, okayRect.y + hy, 0.6 * Math.max(S, 0.8), 0, 7); g.fill();
+      }
     }
 
     // warm lamp light from upper right and a vignette
@@ -278,7 +298,7 @@ label input { accent-color: var(--brass); width: 16px; height: 16px; margin: 0; 
     }
   }
 
-  function leaf(g, l, scale) {
+  function leaf(g, l, scale, flat) {
     var s = l.s * scale;
     if (s < 0.5) return;
     g.save(); g.translate(l.x, l.y); g.rotate(l.a);
@@ -293,6 +313,7 @@ label input { accent-color: var(--brass); width: 16px; height: 16px; margin: 0; 
     g.bezierCurveTo(s * 0.36, s * 0.38, s * 0.3, s * 0.5, s * 0.2, s * 0.62);
     g.bezierCurveTo(s * 0.02, s * 0.52, s * -0.02, s * 0.22, s * 0.12, 0);
     g.fillStyle = l.c; g.fill();
+    if (flat) { g.restore(); return; }
     g.strokeStyle = "rgba(0,0,0,0.3)"; g.lineWidth = 0.7; g.stroke();
     if (l.v) {
       g.beginPath(); g.moveTo(s * 0.14, 0); g.lineTo(s * 0.95, 0);
@@ -302,29 +323,27 @@ label input { accent-color: var(--brass); width: 16px; height: 16px; margin: 0; 
     g.restore();
   }
 
-  function frame(t) {
+  function render() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
     ctx.drawImage(stoneCanvas, 0, 0, W, H);
+    ctx.lineCap = "round"; ctx.lineJoin = "round";
     vines.forEach(function (v) {
-      var p = Math.max(0, Math.min(1, (t - v.start * 0.6) / 0.9));
-      var upto = Math.floor(p * (v.pts.length - 1));
-      if (upto < 1) return;
       ctx.beginPath(); ctx.moveTo(v.pts[0][0], v.pts[0][1]);
-      for (var i = 1; i <= upto; i++) ctx.lineTo(v.pts[i][0], v.pts[i][1]);
-      ctx.strokeStyle = "rgba(70,62,40,0.9)"; ctx.lineWidth = v.w; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.stroke();
+      for (var i = 1; i < v.pts.length; i++) ctx.lineTo(v.pts[i][0], v.pts[i][1]);
+      ctx.strokeStyle = "rgba(70,62,40,0.9)"; ctx.lineWidth = v.w; ctx.stroke();
+    });
+    // shadows first (one cheap pass, no blur), then the leaves
+    vines.forEach(function (v) {
       v.leaves.forEach(function (l) {
-        if (l.k > upto) return;
-        var age = Math.min(1, (upto - l.k) / 10 + 0.2);
-        ctx.save(); ctx.shadowColor = "rgba(0,0,0,0.35)"; ctx.shadowBlur = 3; ctx.shadowOffsetY = 1.5;
-        leaf(ctx, l, age); ctx.restore();
+        leaf(ctx, { x: l.x + 1.2 * S, y: l.y + 2 * S, s: l.s, a: l.a, c: "rgba(0,0,0,0.30)", v: false }, 1, true);
       });
     });
+    vines.forEach(function (v) { v.leaves.forEach(function (l) { leaf(ctx, l, 1); }); });
   }
 
   function layout() {
-    cancelAnimationFrame(anim);
-    W = window.innerWidth; H = window.innerHeight; dpr = Math.min(2, window.devicePixelRatio || 1);
+        W = window.innerWidth; H = window.innerHeight; dpr = Math.min(2, window.devicePixelRatio || 1);
     S = Math.max(0.62, Math.min(1.25, Math.min(W, H * 1.2) / 900));
     cv.width = W * dpr; cv.height = H * dpr;
     drawStones(); makeVines();
@@ -333,18 +352,13 @@ label input { accent-color: var(--brass); width: 16px; height: 16px; margin: 0; 
       okayBtn.style.left = (okayRect.x - px) + "px"; okayBtn.style.top = (okayRect.y - py) + "px";
       okayBtn.style.width = (okayRect.w + px * 2) + "px"; okayBtn.style.height = (okayRect.h + py * 2) + "px";
     }
-    if (reduce || layout.done) { frame(2); return; }
-    var t0 = performance.now();
-    (function tick(now) {
-      var t = (now - t0) / 1600;
-      frame(t);
-      if (t < 1.6) anim = requestAnimationFrame(tick); else layout.done = true;
-    })(t0);
+    render();
+    cv.classList.add("on");
   }
 
   var rt;
   window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(layout, 150); });
-  (document.fonts && document.fonts.load ? document.fonts.load("italic 600 40px 'Cormorant Garamond'") : Promise.resolve())
+  (document.fonts && document.fonts.load ? Promise.all([document.fonts.load("40px 'Pinyon Script'"), document.fonts.load("italic 500 28px 'Cormorant Garamond'")]) : Promise.resolve())
     .catch(function () {}).then(layout);
 
   /* ---------- the gate ---------- */
