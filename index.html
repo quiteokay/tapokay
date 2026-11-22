@@ -1,401 +1,430 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <link rel="icon" type="image/png" href="/app_icon_707.png">
-  <meta name="apple-mobile-web-app-title" content="tap okay">
-  <link rel="apple-touch-icon" href="/app_icon_707.png">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Format Number for WhatsApp</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      padding: 20px;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #128C7E 0%, #24D366 100%);
-      min-height: 100vh;
-      color: #333;
-    }
-
-    .container {
-      text-align: center;
-      max-width: 400px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 16px;
-      padding: 32px 24px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-    }
-
-    h2 {
-      color: #075E54;
-      margin: 0 0 24px 0;
-      font-size: 24px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-
-    button {
-      background: linear-gradient(135deg, #25D366 0%, #24D366 100%);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      padding: 16px 32px;
-      font-size: 18px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      width: 100%;
-      font-family: inherit;
-      position: relative;
-      overflow: hidden;
-    }
-
-    button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3);
-    }
-
-    button:active {
-      transform: translateY(0);
-    }
-
-    button:focus {
-      outline: 3px solid rgba(37, 211, 102, 0.4);
-      outline-offset: 2px;
-    }
-
-    input[type="text"] {
-      padding: 16px;
-      font-size: 16px;
-      width: 100%;
-      border-radius: 12px;
-      border: 2px solid #E5E7EB;
-      font-family: inherit;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-      margin-bottom: 8px;
-    }
-
-    input[type="text"]:focus {
-      outline: none;
-      border-color: #25D366;
-      box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
-    }
-
-    #searchInput {
-      margin-top: 32px;
-      padding: 12px 16px;
-      font-size: 15px;
-      width: 100%;
-      border: 2px solid #E5E7EB;
-      border-radius: 12px;
-      font-family: inherit;
-      background: white;
-    }
-
-    #searchInput:focus {
-      outline: none;
-      border-color: #25D366;
-      box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
-    }
-
-    .country-codes {
-      margin-top: 16px;
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-      max-height: 400px;
-      overflow-y: auto;
-    }
-
-    .country-line {
-      display: block;
-      padding: 12px 16px;
-      cursor: pointer;
-      transition: background-color 0.15s ease;
-      border-bottom: 1px solid #F3F4F6;
-      font-size: 14px;
-      text-align: left;
-    }
-
-    .country-line:last-child {
-      border-bottom: none;
-    }
-
-    .country-line:hover {
-      background-color: #F0FDF4;
-    }
-
-    .country-line:focus {
-      outline: 2px solid #25D366;
-      outline-offset: -2px;
-      background-color: #F0FDF4;
-    }
-
-    .section-label {
-      font-weight: 600;
-      padding: 16px 16px 8px 16px;
-      color: #075E54;
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      background: #F9FAFB;
-      border-bottom: 1px solid #E5E7EB;
-    }
-
-    .help-text {
-      color: #6B7280;
-      font-size: 14px;
-      margin-top: 8px;
-      margin-bottom: 20px;
-      line-height: 1.4;
-    }
-
-    .form-group {
-      margin-bottom: 24px;
-    }
-
-    label {
-      display: block;
-      font-weight: 500;
-      color: #374151;
-      margin-bottom: 8px;
-      text-align: left;
-      font-size: 15px;
-    }
-
-    /* Scrollbar styling */
-    .country-codes::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .country-codes::-webkit-scrollbar-track {
-      background: #F3F4F6;
-    }
-
-    .country-codes::-webkit-scrollbar-thumb {
-      background: #D1D5DB;
-      border-radius: 3px;
-    }
-
-    .country-codes::-webkit-scrollbar-thumb:hover {
-      background: #9CA3AF;
-    }
-
-    /* High contrast mode support */
-    @media (prefers-contrast: high) {
-      body {
-        background: #000;
-        color: #fff;
-      }
-      
-      .container {
-        background: #fff;
-        border: 2px solid #000;
-      }
-      
-      button {
-        background: #000;
-        border: 2px solid #fff;
-      }
-    }
-
-    /* Reduced motion support */
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>tap okay</title>
+<meta name="theme-color" content="#151a1c">
+<link rel="icon" type="image/png" href="/app_icon_707.png">
+<link rel="apple-touch-icon" href="/app_icon_707.png">
+<meta name="apple-mobile-web-app-title" content="tap okay">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* An old garden wall at dusk, grown over with ivy. One stone is carved "okay". Single look on purpose. */
+:root {
+  --night: #151a1c;
+  --plaque: #2b2a25;
+  --plaque-edge: #4a463b;
+  --brass: #c9b27c;
+  --ink: #efe8d6;
+  --muted: #a69f8c;
+  --font-carve: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { margin: 0; background: var(--night); color: var(--ink); font-family: var(--font-body); overflow: hidden; }
+canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+#okay {
+  position: absolute; border: 0; padding: 0; margin: 0; background: transparent; cursor: pointer;
+  border-radius: 6px; -webkit-tap-highlight-color: transparent;
+}
+#okay::after {
+  content: ""; position: absolute; inset: -30%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 226, 160, 0.16), rgba(255, 226, 160, 0));
+  opacity: 0; transition: opacity 0.6s ease;
+}
+#okay:hover::after, #okay:focus-visible::after { opacity: 1; }
+#okay:focus-visible { outline: 1px solid rgba(239, 232, 214, 0.35); outline-offset: 4px; }
+.veil { position: fixed; inset: 0; background: rgba(8, 10, 11, 0.55); opacity: 0; transition: opacity 0.4s ease; pointer-events: none; }
+.veil.on { opacity: 1; pointer-events: auto; }
+form#gate {
+  position: fixed; left: 50%; top: 50%; transform: translate(-50%, -46%);
+  width: min(360px, calc(100vw - 32px)); box-sizing: border-box;
+  background: linear-gradient(160deg, #34322b, var(--plaque) 60%);
+  border: 1px solid var(--plaque-edge); border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  padding: 22px 22px 18px; display: flex; flex-direction: column; gap: 12px;
+  opacity: 0; transition: opacity 0.35s ease, transform 0.35s ease;
+}
+form#gate.on { opacity: 1; transform: translate(-50%, -50%); }
+form#gate h1 { font: italic 500 28px/1 var(--font-carve); color: var(--brass); margin: 0; letter-spacing: 0.01em; }
+form#gate p { margin: 0; font-size: 13.5px; color: var(--muted); }
+.row { display: flex; gap: 8px; }
+#pass {
+  flex: 1; min-width: 0; font: 500 16px var(--font-body); color: var(--ink);
+  background: rgba(0, 0, 0, 0.28); border: 1px solid var(--plaque-edge); border-radius: 9px; padding: 10px 12px;
+}
+#pass:focus { outline: 2px solid var(--brass); outline-offset: 1px; border-color: transparent; }
+#enter {
+  font: 600 15px var(--font-body); color: #1d1b16; background: var(--brass); border: 0; border-radius: 9px; padding: 0 16px; cursor: pointer;
+}
+#enter:disabled { opacity: 0.6; cursor: default; }
+#enter:focus-visible, #close:focus-visible, label:focus-within { outline: 2px solid var(--brass); outline-offset: 2px; }
+label { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--muted); cursor: pointer; border-radius: 6px; width: fit-content; }
+label input { accent-color: var(--brass); width: 16px; height: 16px; margin: 0; }
+#msg { min-height: 18px; font-size: 13.5px; color: #e7a98f; }
+#close { position: absolute; right: 10px; top: 10px; width: 32px; height: 32px; border: 0; border-radius: 8px; background: none; color: var(--muted); font-size: 20px; cursor: pointer; }
+.shake { animation: shake 0.38s ease; }
+@keyframes shake { 20%, 60% { margin-left: -8px; } 40%, 80% { margin-left: 8px; } }
+@media (prefers-reduced-motion: reduce) {
+  form#gate, .veil, #okay::after { transition: none; }
+  .shake { animation: none; }
+}
+</style>
 </head>
 <body>
-  <div class="container">
-    <form onsubmit="goToWhatsApp(event)">
-      <h2>WhatsApp # Formatter</h2>
-      
-      <div class="form-group">
-        <label for="phoneInput">Phone Number with Country Code</label>
-        <input
-          type="text"
-          id="phoneInput"
-          placeholder="+1 (832) 555-1234"
-          autocomplete="tel"
-          aria-describedby="phone-help"
-        />
-        <div id="phone-help" class="help-text">
-          Don't worry about formatting! ✨
-        </div>
-      </div>
-      
-      <button type="submit" id="ok-button" aria-describedby="button-help">
-        Open in WhatsApp
-      </button>
-    </form>
+<canvas id="wall" aria-hidden="true"></canvas>
+<button id="okay" type="button" aria-label="okay"></button>
+<div class="veil" id="veil"></div>
+<form id="gate" hidden autocomplete="on">
+  <button type="button" id="close" aria-label="Close">&times;</button>
+  <h1>okay</h1>
+  <p>This garden is private.</p>
+  <input type="text" name="username" value="okay" autocomplete="username" hidden>
+  <div class="row">
+    <input id="pass" name="password" type="password" autocomplete="current-password" placeholder="Passphrase" aria-label="Passphrase" required>
+    <button id="enter" type="submit">Enter</button>
   </div>
+  <label><input type="checkbox" id="remember" checked> Remember this device</label>
+  <div id="msg" role="status" aria-live="polite"></div>
+</form>
 
-  <div style="max-width: 400px; margin: 0 auto;">
-    <input
-      type="text"
-      id="searchInput"
-      placeholder="Search countries..."
-      aria-describedby="search-help"
-    />
+<script>
+(function () {
+  var cv = document.getElementById("wall"), ctx = cv.getContext("2d");
+  var okayBtn = document.getElementById("okay");
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var W, H, S, dpr, stoneCanvas, vines, okayRect, anim = 0;
 
-    <div id="countryList" class="country-codes" role="listbox" aria-label="Country codes"></div>
-  </div>
+  function rng(seed) {
+    return function () {
+      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+      var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
 
-  <script>
-    const phoneInput = document.getElementById("phoneInput");
-    const countryListDiv = document.getElementById("countryList");
-    const searchInput = document.getElementById("searchInput");
+  function roundedStone(g, x, y, w, h, r, R) {
+    var j = function () { return (R() - 0.5) * r * 0.9; };
+    var p = [[x + j(), y + j()], [x + w + j(), y + j()], [x + w + j(), y + h + j()], [x + j(), y + h + j()]];
+    g.beginPath();
+    for (var i = 0; i < 4; i++) {
+      var a = p[i], b = p[(i + 1) % 4], c = p[(i + 3) % 4];
+      var ax = a[0] + (c[0] - a[0]) * 0.18, ay = a[1] + (c[1] - a[1]) * 0.18;
+      var bx = a[0] + (b[0] - a[0]) * 0.18, by = a[1] + (b[1] - a[1]) * 0.18;
+      if (i === 0) g.moveTo(ax, ay); else g.lineTo(ax, ay);
+      g.quadraticCurveTo(a[0], a[1], bx, by);
+    }
+    g.closePath();
+  }
 
-    const countries = [
-      "Afghanistan +93", "Albania +355", "Algeria +213", "Andorra +376", "Angola +244",
-      "Antigua and Barbuda +1-268", "Argentina +54", "Armenia +374", "Australia +61", "Austria +43",
-      "Azerbaijan +994", "Bahamas +1-242", "Bahrain +973", "Bangladesh +880", "Barbados +1-246",
-      "Belarus +375", "Belgium +32", "Belize +501", "Benin +229", "Bhutan +975",
-      "Bolivia +591", "Bosnia and Herzegovina +387", "Botswana +267", "Brazil +55", "Brunei +673",
-      "Bulgaria +359", "Burkina Faso +226", "Burundi +257", "Cabo Verde +238", "Cambodia +855",
-      "Cameroon +237", "Canada +1", "Central African Republic +236", "Chad +235", "Chile +56",
-      "China +86", "Colombia +57", "Comoros +269", "Congo (Brazzaville) +242", "Congo (Kinshasa) +243",
-      "Costa Rica +506", "Croatia +385", "Cuba +53", "Cyprus +357", "Czech Republic +420",
-      "Denmark +45", "Djibouti +253", "Dominica +1-767", "Dominican Republic +1-809", "Ecuador +593",
-      "Egypt +20", "El Salvador +503", "Equatorial Guinea +240", "Eritrea +291", "Estonia +372",
-      "Eswatini +268", "Ethiopia +251", "Fiji +679", "Finland +358", "France +33",
-      "Gabon +241", "Gambia +220", "Georgia +995", "Germany +49", "Ghana +233",
-      "Greece +30", "Grenada +1-473", "Guatemala +502", "Guinea +224", "Guinea-Bissau +245",
-      "Guyana +592", "Haiti +509", "Honduras +504", "Hungary +36", "Iceland +354",
-      "India +91", "Indonesia +62", "Iran +98", "Iraq +964", "Ireland +353",
-      "Israel +972", "Italy +39", "Jamaica +1-876", "Japan +81", "Jordan +962",
-      "Kazakhstan +7", "Kenya +254", "Kiribati +686", "Korea, North +850", "Korea, South +82",
-      "Kosovo +383", "Kuwait +965", "Kyrgyzstan +996", "Laos +856", "Latvia +371",
-      "Lebanon +961", "Lesotho +266", "Liberia +231", "Libya +218", "Liechtenstein +423",
-      "Lithuania +370", "Luxembourg +352", "Madagascar +261", "Malawi +265", "Malaysia +60",
-      "Maldives +960", "Mali +223", "Malta +356", "Marshall Islands +692", "Mauritania +222",
-      "Mauritius +230", "Mexico +52", "Micronesia +691", "Moldova +373", "Monaco +377",
-      "Mongolia +976", "Montenegro +382", "Morocco +212", "Mozambique +258", "Myanmar (Burma) +95",
-      "Namibia +264", "Nauru +674", "Nepal +977", "Netherlands +31", "New Zealand +64",
-      "Nicaragua +505", "Niger +227", "Nigeria +234", "North Macedonia +389", "Norway +47",
-      "Oman +968", "Pakistan +92", "Palau +680", "Palestine +970", "Panama +507",
-      "Papua New Guinea +675", "Paraguay +595", "Peru +51", "Philippines +63", "Poland +48",
-      "Portugal +351", "Qatar +974", "Romania +40", "Russia +7", "Rwanda +250",
-      "Saint Kitts and Nevis +1-869", "Saint Lucia +1-758", "Saint Vincent and the Grenadines +1-784",
-      "Samoa +685", "San Marino +378", "Sao Tome and Principe +239", "Saudi Arabia +966", "Senegal +221",
-      "Serbia +381", "Seychelles +248", "Sierra Leone +232", "Singapore +65", "Slovakia +421",
-      "Slovenia +386", "Solomon Islands +677", "Somalia +252", "South Africa +27", "South Sudan +211",
-      "Spain +34", "Sri Lanka +94", "Sudan +249", "Suriname +597", "Sweden +46",
-      "Switzerland +41", "Syria +963", "Taiwan +886", "Tajikistan +992", "Tanzania +255",
-      "Thailand +66", "Timor-Leste +670", "Togo +228", "Tonga +676", "Trinidad and Tobago +1-868",
-      "Tunisia +216", "Turkey +90", "Turkmenistan +993", "Tuvalu +688", "Uganda +256",
-      "Ukraine +380", "United Arab Emirates +971", "United Kingdom +44", "United States +1",
-      "Uruguay +598", "Uzbekistan +998", "Vanuatu +678", "Vatican City +379", "Venezuela +58",
-      "Vietnam +84", "Yemen +967", "Zambia +260", "Zimbabwe +263"
-    ];
+  function drawStones() {
+    var R = rng(70707);
+    stoneCanvas = document.createElement("canvas");
+    stoneCanvas.width = W * dpr; stoneCanvas.height = H * dpr;
+    var g = stoneCanvas.getContext("2d");
+    g.scale(dpr, dpr);
 
-    function goToWhatsApp(event) {
-      event.preventDefault();
-      const rawInput = phoneInput.value;
-      const cleaned = rawInput.replace(/[^\d]/g, "");
-      if (cleaned.length < 7) {
-        alert("Please enter a valid phone number with at least 7 digits.");
-        phoneInput.focus();
-        return;
+    // dusk sky above the wall
+    var top = Math.round(H * 0.14);
+    var sky = g.createLinearGradient(0, 0, 0, top + 30 * S);
+    sky.addColorStop(0, "#10151c"); sky.addColorStop(1, "#3a3a3c");
+    g.fillStyle = sky; g.fillRect(0, 0, W, top + 40 * S);
+    for (var i = 0; i < 26; i++) {
+      g.fillStyle = "rgba(255,248,230," + (0.25 + R() * 0.5) + ")";
+      g.beginPath(); g.arc(R() * W, R() * top * 0.8, R() * 1.1 + 0.3, 0, 7); g.fill();
+    }
+
+    // mortar
+    g.fillStyle = "#2f2c27"; g.fillRect(0, top, W, H - top);
+    for (i = 0; i < W * H / 60; i++) {
+      g.fillStyle = "rgba(0,0,0," + R() * 0.25 + ")";
+      g.fillRect(R() * W, top + R() * (H - top), 1.3, 1.3);
+    }
+
+    // coping stones on top of the wall
+    var copeH = 26 * S, x = -R() * 40 * S;
+    while (x < W) {
+      var cw = (90 + R() * 70) * S;
+      roundedStone(g, x + 2, top, cw - 4, copeH, 8 * S, R);
+      var cg = g.createLinearGradient(0, top, 0, top + copeH);
+      var l = 52 + R() * 8;
+      cg.addColorStop(0, "hsl(38,10%," + (l + 8) + "%)"); cg.addColorStop(1, "hsl(36,9%," + (l - 10) + "%)");
+      g.fillStyle = cg; g.fill();
+      x += cw;
+    }
+
+    // stone courses
+    var y = top + copeH + 3 * S, rows = [];
+    while (y < H) {
+      var rh = (34 + R() * 22) * S;
+      var row = [];
+      x = -R() * 60 * S;
+      while (x < W) {
+        var w = rh * (1.25 + R() * 1.5);
+        row.push([x, y, w, rh]);
+        x += w;
       }
-      // Open in new window/tab
-      window.open(`https://wa.me/${cleaned}`, '_blank', 'noopener,noreferrer');
+      rows.push(row);
+      y += rh;
     }
 
-    function extractCode(entry) {
-      const match = entry.match(/\+[\d-]+/);
-      return match ? match[0].replace(/-/g, "") : "";
+    // the okay stone: lower right third, a wide stone
+    var target = rows[Math.min(rows.length - 2, Math.max(1, Math.round(rows.length * 0.62)))];
+    var best = null;
+    target.forEach(function (s) {
+      var cx = s[0] + s[2] / 2, score = Math.abs(cx - W * 0.68) - s[2] * 0.6;
+      if (s[0] > 10 && s[0] + s[2] < W - 10 && (!best || score < best.score)) best = { s: s, score: score };
+    });
+    if (best) {
+      var bs = best.s;
+      if (bs[2] < 110 * S) bs[2] = 110 * S;
+      okayRect = { x: bs[0] + 3 * S, y: bs[1] + 3 * S, w: bs[2] - 6 * S, h: bs[3] - 6 * S };
     }
 
-    function insertCode(code, countryName = null) {
-      phoneInput.value = code + " ";
-      phoneInput.focus();
-      if (countryName) {
-        updateRecent(countryName);
-        // Keep the list visible - don't refresh the display
-      }
-    }
-
-    function updateRecent(country) {
-      let recent = JSON.parse(localStorage.getItem("recentCountries") || "[]");
-      recent = [country, ...recent.filter(c => c !== country)].slice(0, 5);
-      localStorage.setItem("recentCountries", JSON.stringify(recent));
-    }
-
-    function displayCountries(filter = "") {
-      const recent = JSON.parse(localStorage.getItem("recentCountries") || "[]");
-      const recentEntries = recent.map(r => countries.find(c => c.startsWith(r))).filter(Boolean);
-
-      const filtered = countries.filter(c =>
-        c.toLowerCase().includes(filter.toLowerCase()) &&
-        !recent.some(recentCountry => c.startsWith(recentCountry))
-      );
-
-      let html = "";
-
-      if (!filter && recentEntries.length) {
-        html += `<div class="section-label">Recent</div>`;
-        html += recentEntries.map(c =>
-          `<div class="country-line" tabindex="0" role="option" onclick="insertCode('${extractCode(c)}', '${c.split(' +')[0]}')" onkeydown="handleKeyDown(event, '${extractCode(c)}', '${c.split(' +')[0]}')">${c}</div>`
-        ).join("");
-        html += `<div class="section-label">All Countries</div>`;
-      }
-
-      html += filtered.map(c =>
-        `<div class="country-line" tabindex="0" role="option" onclick="insertCode('${extractCode(c)}', '${c.split(' +')[0]}')" onkeydown="handleKeyDown(event, '${extractCode(c)}', '${c.split(' +')[0]}')">${c}</div>`
-      ).join("");
-
-      countryListDiv.innerHTML = html;
-    }
-
-    function handleKeyDown(event, code, countryName) {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        insertCode(code, countryName);
-      }
-    }
-
-    searchInput.addEventListener("input", () => {
-      displayCountries(searchInput.value.trim());
+    rows.forEach(function (row) {
+      row.forEach(function (s) {
+        var m = 3 * S;
+        roundedStone(g, s[0] + m, s[1] + m, s[2] - 2 * m, s[3] - 2 * m, 9 * S, R);
+        var hue = 26 + R() * 16, sat = 6 + R() * 12, lit = 34 + R() * 15;
+        var sg = g.createLinearGradient(s[0], s[1], s[0] + s[2] * 0.3, s[1] + s[3]);
+        sg.addColorStop(0, "hsl(" + hue + "," + sat + "%," + (lit + 7) + "%)");
+        sg.addColorStop(1, "hsl(" + hue + "," + sat + "%," + (lit - 9) + "%)");
+        g.save(); g.fillStyle = sg; g.fill(); g.clip();
+        for (var k = 0; k < s[2] * s[3] / 22; k++) {
+          g.fillStyle = (R() < 0.5 ? "rgba(0,0,0," : "rgba(255,250,235,") + (R() * 0.09) + ")";
+          g.fillRect(s[0] + R() * s[2], s[1] + R() * s[3], 1.6 * S, 1.6 * S);
+        }
+        if (R() < 0.35) {
+          var lg = g.createRadialGradient(s[0] + R() * s[2], s[1] + R() * s[3], 1, s[0] + s[2] / 2, s[1] + s[3] / 2, s[2] * 0.6);
+          lg.addColorStop(0, "rgba(96,110,70,0.28)"); lg.addColorStop(1, "rgba(96,110,70,0)");
+          g.fillStyle = lg; g.fillRect(s[0], s[1], s[2], s[3]);
+        }
+        g.restore();
+        g.lineWidth = 1.2 * S;
+        g.strokeStyle = "rgba(255,245,225,0.10)"; g.stroke();
+      });
     });
 
-    searchInput.addEventListener("keydown", e => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        const filter = searchInput.value.trim().toLowerCase();
-        const filtered = countries.filter(c =>
-          c.toLowerCase().includes(filter)
-        );
-        if (filtered.length > 0) {
-          insertCode(extractCode(filtered[0]), filtered[0].split(" +")[0]);
+    // carve "okay"
+    if (okayRect) {
+      var fs = Math.min(okayRect.h * 0.62, okayRect.w * 0.34);
+      g.font = "italic 600 " + fs + "px " + getComputedStyle(document.documentElement).getPropertyValue("--font-carve");
+      g.textAlign = "center"; g.textBaseline = "middle";
+      var tx = okayRect.x + okayRect.w / 2, ty = okayRect.y + okayRect.h / 2 + fs * 0.04;
+      g.fillStyle = "rgba(255,248,232,0.10)"; g.fillText("okay", tx + 0.9 * S, ty + 1.1 * S);
+      g.fillStyle = "rgba(20,16,10,0.30)"; g.fillText("okay", tx, ty);
+    }
+
+    // warm lamp light from upper right and a vignette
+    var lamp = g.createRadialGradient(W * 0.78, H * 0.08, 10, W * 0.7, H * 0.3, Math.max(W, H) * 0.85);
+    lamp.addColorStop(0, "rgba(255,206,140,0.24)"); lamp.addColorStop(0.5, "rgba(255,190,120,0.06)"); lamp.addColorStop(1, "rgba(0,0,0,0)");
+    g.fillStyle = lamp; g.fillRect(0, 0, W, H);
+    var vig = g.createRadialGradient(W / 2, H * 0.55, Math.min(W, H) * 0.25, W / 2, H * 0.55, Math.max(W, H) * 0.8);
+    vig.addColorStop(0, "rgba(0,0,0,0)"); vig.addColorStop(1, "rgba(5,7,8,0.62)");
+    g.fillStyle = vig; g.fillRect(0, 0, W, H);
+    g.fillStyle = "rgba(20,30,40,0.16)"; g.fillRect(0, 0, W, H);
+  }
+
+  function makeVines() {
+    var R = rng(4242);
+    vines = [];
+    var top = Math.round(H * 0.14);
+    var n = Math.round(W / (W < 600 ? 55 : 95)) + 5;
+    var keep = okayRect ? { x: okayRect.x + okayRect.w * 0.12, y: okayRect.y + okayRect.h * 0.08, w: okayRect.w * 0.76, h: okayRect.h * 0.84 } : null;
+    function blocked(x, y) { return keep && x > keep.x - 6 * S && x < keep.x + keep.w + 6 * S && y > keep.y - 6 * S && y < keep.y + keep.h + 6 * S; }
+    for (var i = 0; i < n; i++) {
+      var fromTop = i % 3 !== 0;
+      var x = R() * W, y = fromTop ? top + 8 * S : H + 4;
+      var dir = fromTop ? Math.PI / 2 : -Math.PI / 2;
+      dir += (R() - 0.5) * 0.8;
+      var len = Math.round((fromTop ? 70 + R() * 130 : 80 + R() * 150) * Math.max(0.8, H / 900));
+      var pts = [[x, y]], leaves = [], bend = 0;
+      for (var k = 0; k < len; k++) {
+        bend += (R() - 0.5) * 0.18; bend *= 0.92;
+        dir += bend + (fromTop ? (Math.PI / 2 - dir) * 0.02 : (-Math.PI / 2 - dir) * 0.012);
+        var step = 5.5 * Math.max(S, 0.9);
+        var nx = x + Math.cos(dir) * step, ny = y + Math.sin(dir) * step;
+        if (blocked(nx, ny)) { dir += (R() < 0.5 ? 1 : -1) * 1.1; nx = x + Math.cos(dir) * step; ny = y + Math.sin(dir) * step; if (blocked(nx, ny)) break; }
+        if (ny < top - 4 * S || ny > H + 20 || nx < -30 || nx > W + 30) break;
+        x = nx; y = ny; pts.push([x, y]);
+        if (k % 2 === 0 && R() < 0.9) {
+          var side = (k / 2) % 2 ? 1 : -1;
+          var sz = (13 + R() * 15) * S * (1 - k / len * 0.3);
+          var lx = x + Math.cos(dir + side * 1.4) * sz * 0.7, ly = y + Math.sin(dir + side * 1.4) * sz * 0.7;
+          if (blocked(lx, ly)) continue;
+          var red = R() < 0.06;
+          var col = red ? "hsl(" + (8 + R() * 16) + ",46%," + (26 + R() * 10) + "%)" : "hsl(" + (98 + R() * 34) + "," + (28 + R() * 22) + "%," + (13 + R() * 17) + "%)";
+          leaves.push({ k: k, x: lx, y: ly, s: sz, a: dir + side * 1.3 + (R() - 0.5) * 0.6, c: col, v: R() < 0.5 });
+        }
+        if (R() < 0.03 && vines.length < n * 4) {
+          // small side shoot
+          var sx = x, sy = y, sd = dir + (R() < 0.5 ? 0.9 : -0.9), spts = [[sx, sy]], sl = [];
+          for (var q = 0; q < 30 + R() * 40; q++) {
+            sd += (R() - 0.5) * 0.3; sx += Math.cos(sd) * step; sy += Math.sin(sd) * step;
+            if (blocked(sx, sy) || sy < top) break;
+            spts.push([sx, sy]);
+            if (q % 2 === 0) sl.push({ k: q, x: sx + Math.cos(sd + 1.4) * 8 * S, y: sy + Math.sin(sd + 1.4) * 8 * S, s: (11 + R() * 11) * S, a: sd + 1.3 * (q % 4 ? 1 : -1), c: "hsl(" + (98 + R() * 30) + ",36%," + (15 + R() * 16) + "%)", v: R() < 0.5 });
+          }
+          vines.push({ pts: spts, leaves: sl, start: k / len, w: 1.3 * S });
         }
       }
-    });
+      vines.push({ pts: pts, leaves: leaves, start: 0, w: 2 * S });
+    }
+  }
 
-    phoneInput.addEventListener("input", () => {
-      const val = phoneInput.value.trim();
-      const match = val.match(/^(\+\d+)\s0(\d+)/);
-      if (match) {
-        phoneInput.value = `${match[1]} ${match[2]}`;
+  function leaf(g, l, scale) {
+    var s = l.s * scale;
+    if (s < 0.5) return;
+    g.save(); g.translate(l.x, l.y); g.rotate(l.a);
+    g.beginPath();
+    g.moveTo(s * 0.12, 0);
+    g.bezierCurveTo(s * -0.02, -s * 0.22, s * 0.02, -s * 0.52, s * 0.2, -s * 0.62);
+    g.bezierCurveTo(s * 0.3, -s * 0.5, s * 0.36, -s * 0.38, s * 0.44, -s * 0.34);
+    g.bezierCurveTo(s * 0.62, -s * 0.42, s * 0.78, -s * 0.3, s * 0.82, -s * 0.18);
+    g.bezierCurveTo(s * 0.9, -s * 0.1, s * 1.0, -s * 0.04, s * 1.08, 0);
+    g.bezierCurveTo(s * 1.0, s * 0.04, s * 0.9, s * 0.1, s * 0.82, s * 0.18);
+    g.bezierCurveTo(s * 0.78, s * 0.3, s * 0.62, s * 0.42, s * 0.44, s * 0.34);
+    g.bezierCurveTo(s * 0.36, s * 0.38, s * 0.3, s * 0.5, s * 0.2, s * 0.62);
+    g.bezierCurveTo(s * 0.02, s * 0.52, s * -0.02, s * 0.22, s * 0.12, 0);
+    g.fillStyle = l.c; g.fill();
+    g.strokeStyle = "rgba(0,0,0,0.3)"; g.lineWidth = 0.7; g.stroke();
+    if (l.v) {
+      g.beginPath(); g.moveTo(s * 0.14, 0); g.lineTo(s * 0.95, 0);
+      g.moveTo(s * 0.18, 0); g.lineTo(s * 0.24, -s * 0.48); g.moveTo(s * 0.18, 0); g.lineTo(s * 0.24, s * 0.48);
+      g.strokeStyle = "rgba(210,230,170,0.22)"; g.lineWidth = 0.7; g.stroke();
+    }
+    g.restore();
+  }
+
+  function frame(t) {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    ctx.drawImage(stoneCanvas, 0, 0, W, H);
+    vines.forEach(function (v) {
+      var p = Math.max(0, Math.min(1, (t - v.start * 0.6) / 0.9));
+      var upto = Math.floor(p * (v.pts.length - 1));
+      if (upto < 1) return;
+      ctx.beginPath(); ctx.moveTo(v.pts[0][0], v.pts[0][1]);
+      for (var i = 1; i <= upto; i++) ctx.lineTo(v.pts[i][0], v.pts[i][1]);
+      ctx.strokeStyle = "rgba(70,62,40,0.9)"; ctx.lineWidth = v.w; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.stroke();
+      v.leaves.forEach(function (l) {
+        if (l.k > upto) return;
+        var age = Math.min(1, (upto - l.k) / 10 + 0.2);
+        ctx.save(); ctx.shadowColor = "rgba(0,0,0,0.35)"; ctx.shadowBlur = 3; ctx.shadowOffsetY = 1.5;
+        leaf(ctx, l, age); ctx.restore();
+      });
+    });
+  }
+
+  function layout() {
+    cancelAnimationFrame(anim);
+    W = window.innerWidth; H = window.innerHeight; dpr = Math.min(2, window.devicePixelRatio || 1);
+    S = Math.max(0.62, Math.min(1.25, Math.min(W, H * 1.2) / 900));
+    cv.width = W * dpr; cv.height = H * dpr;
+    drawStones(); makeVines();
+    if (okayRect) {
+      var px = 10, py = Math.max(6, (44 - okayRect.h) / 2);
+      okayBtn.style.left = (okayRect.x - px) + "px"; okayBtn.style.top = (okayRect.y - py) + "px";
+      okayBtn.style.width = (okayRect.w + px * 2) + "px"; okayBtn.style.height = (okayRect.h + py * 2) + "px";
+    }
+    if (reduce || layout.done) { frame(2); return; }
+    var t0 = performance.now();
+    (function tick(now) {
+      var t = (now - t0) / 1600;
+      frame(t);
+      if (t < 1.6) anim = requestAnimationFrame(tick); else layout.done = true;
+    })(t0);
+  }
+
+  var rt;
+  window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(layout, 150); });
+  (document.fonts && document.fonts.load ? document.fonts.load("italic 600 40px 'Cormorant Garamond'") : Promise.resolve())
+    .catch(function () {}).then(layout);
+
+  /* ---------- the gate ---------- */
+  var gate = document.getElementById("gate"), veil = document.getElementById("veil");
+  var pass = document.getElementById("pass"), msg = document.getElementById("msg"), enter = document.getElementById("enter");
+  var remember = document.getElementById("remember");
+  var boxP = null;
+  function box() {
+    if (!boxP) boxP = fetch("garden.json", { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error("missing"); return r.json(); });
+    return boxP;
+  }
+  function b64(s) { var b = atob(s), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
+  function unb64(buf) { var u = new Uint8Array(buf), s = ""; for (var i = 0; i < u.length; i++) s += String.fromCharCode(u[i]); return btoa(s); }
+  function norm(p) { return p.trim().toLowerCase().replace(/[\s_-]+/g, "-"); }
+  function derive(p, bx, extractable) {
+    return crypto.subtle.importKey("raw", new TextEncoder().encode(norm(p)), "PBKDF2", false, ["deriveKey"]).then(function (base) {
+      return crypto.subtle.deriveKey({ name: "PBKDF2", hash: "SHA-256", salt: b64(bx.salt), iterations: bx.iter }, base, { name: "AES-GCM", length: 256 }, extractable, ["decrypt"]);
+    });
+  }
+  function openWith(key, bx) {
+    return crypto.subtle.decrypt({ name: "AES-GCM", iv: b64(bx.iv) }, key, b64(bx.ct)).then(function (buf) {
+      return new TextDecoder().decode(buf);
+    });
+  }
+  function enterGarden(html) {
+    document.open(); document.write(html); document.close();
+  }
+  function saved() { try { return JSON.parse(localStorage.getItem("okay.key") || "null"); } catch (e) { return null; } }
+
+  function showGate() {
+    gate.hidden = false; veil.classList.add("on");
+    requestAnimationFrame(function () { gate.classList.add("on"); pass.focus(); });
+  }
+  function hideGate() {
+    gate.classList.remove("on"); veil.classList.remove("on");
+    setTimeout(function () { gate.hidden = true; msg.textContent = ""; }, reduce ? 0 : 350);
+    okayBtn.focus();
+  }
+
+  okayBtn.addEventListener("click", function () {
+    if (!window.crypto || !crypto.subtle) { showGate(); msg.textContent = "This browser can't unlock the garden. Try a current Safari, Chrome or Firefox."; return; }
+    var s = saved();
+    box().then(function (bx) {
+      if (s && s.salt === bx.salt) {
+        return crypto.subtle.importKey("raw", b64(s.key), { name: "AES-GCM" }, false, ["decrypt"])
+          .then(function (k) { return openWith(k, bx); })
+          .then(enterGarden)
+          .catch(function () { try { localStorage.removeItem("okay.key"); } catch (e) {} showGate(); });
       }
-    });
+      showGate();
+    }).catch(function () { showGate(); msg.textContent = "The garden couldn't be reached. Check your connection and try again."; });
+  });
+  document.getElementById("close").addEventListener("click", hideGate);
+  veil.addEventListener("click", hideGate);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !gate.hidden) hideGate(); });
 
-    // Initialize the country list
-    displayCountries();
-  </script>
+  gate.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!pass.value.trim()) return;
+    enter.disabled = true; msg.textContent = "";
+    var bx;
+    box().then(function (b) { bx = b; return derive(pass.value, bx, remember.checked); })
+      .then(function (key) {
+        return openWith(key, bx).then(function (html) {
+          if (!remember.checked) return html;
+          return crypto.subtle.exportKey("raw", key).then(function (raw) {
+            try { localStorage.setItem("okay.key", JSON.stringify({ salt: bx.salt, key: unb64(raw) })); } catch (e) {}
+            return html;
+          });
+        });
+      })
+      .then(enterGarden)
+      .catch(function () {
+        enter.disabled = false;
+        msg.textContent = "That's not it.";
+        gate.classList.remove("shake"); void gate.offsetWidth; gate.classList.add("shake");
+        pass.select();
+      });
+  });
+})();
+</script>
 </body>
 </html>
