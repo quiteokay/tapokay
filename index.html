@@ -226,10 +226,10 @@ label input { accent-color: var(--brass); width: 16px; height: 16px; margin: 0; 
       var MR = rng(808);
       for (var yy = 0; yy < mh; yy += 1) {
         for (var xx = 0; xx < mw; xx += 1) {
-          if (px[(yy * mw + xx) * 4 + 3] < 110 || MR() > 0.55) continue;
+          if (px[(yy * mw + xx) * 4 + 3] < 110 || MR() > 0.7) continue;
           var gx = okayRect.x + xx + (MR() - 0.5) * 1.6, gy = okayRect.y + yy + (MR() - 0.5) * 1.6;
-          g.fillStyle = "hsla(" + (78 + MR() * 30) + "," + (30 + MR() * 20) + "%," + (24 + MR() * 16) + "%," + (0.35 + MR() * 0.4) + ")";
-          g.beginPath(); g.arc(gx, gy, (0.55 + MR() * 0.8) * Math.max(S, 0.8), 0, 7); g.fill();
+          g.fillStyle = "hsla(" + (80 + MR() * 30) + "," + (34 + MR() * 20) + "%," + (28 + MR() * 16) + "%," + (0.5 + MR() * 0.35) + ")";
+          g.beginPath(); g.arc(gx, gy, (0.7 + MR() * 0.9) * Math.max(S, 0.8), 0, 7); g.fill();
         }
       }
       // a soft halo of loose moss so the edges blur into the stone
