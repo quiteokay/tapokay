@@ -208,12 +208,12 @@ label input { accent-color: var(--mulled); width: 16px; height: 16px; margin: 0;
     g.lineTo(wx + ww, wy + wh); g.closePath(); g.fill();
 
     // bookshelves; every book has a title, and one of them is the door
-    var TITLES = ["the trial", "a christmas carol", "the magic mountain", "letters from prague", "the danube", "a history of salt", "winter's tale", "the castle",
+    var TITLES = ["the trial", "a christmas carol", "the magic mountain", "letters from prague", "the danube", "a history of coffee", "winter's tale", "the castle",
       "night train to vienna", "emma", "middlemarch", "faust", "grimm's tales", "the nutcracker", "mozart's letters", "old vienna", "persuasion", "dubliners",
-      "bohemia", "the snow queen", "walden", "the odyssey", "candide", "siddhartha", "steppenwolf", "notes on absinthe", "the toboggan run", "island days",
+      "bohemia", "the snow queen", "walden", "the odyssey", "candide", "siddhartha", "steppenwolf", "notes on vermouth", "the sleigh ride", "island days",
       "the little prince", "the alps in winter", "a room with a view", "the leopard", "jane eyre", "anna karenina", "war and peace", "the brothers karamazov",
       "the sound of bells", "coffee houses of europe", "the salzburg diaries", "a field guide to ivy", "the good soldier švejk", "the man without qualities",
-      "the radetzky march", "a moveable feast", "the hobbit", "little women", "north and south", "dracula", "frankenstein", "the green fairy"];
+      "the radetzky march", "a moveable feast", "the hobbit", "little women", "north and south", "dracula", "frankenstein", "the green door"];
     var LIGHT = { "#d8cbb0": 1, "#b49a6a": 1, "#8a6a2c": 1 };
     function inWindow(x0, x1, y0) { return x1 > wx + 2 && x0 < wx + ww - 2 && y0 < wy + wh + 14 * S; }
     var targetRow = Math.max(0, nRows - 2), targetX = narrow ? W * 0.06 : W * 0.86;
