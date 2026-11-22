@@ -22,7 +22,7 @@ const OUT = path.join(__dirname, "..", "garden.json");
 const ITER = 600000;
 
 function normalize(p) {
-  return p.trim().toLowerCase().replace(/[\s_-]+/g, "-");
+  return p.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase().replace(/[\s_-]+/g, "-");
 }
 function key(pass, salt) {
   return crypto.pbkdf2Sync(Buffer.from(normalize(pass), "utf8"), salt, ITER, 32, "sha256");

@@ -40,7 +40,7 @@ canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
   border-radius: 4px; -webkit-tap-highlight-color: transparent; transition: transform 0.25s ease;
 }
 #book::after {
-  content: ""; position: absolute; inset: -40% -12%; border-radius: 50%;
+  content: ""; position: absolute; inset: -6% -60%; border-radius: 50%;
   background: radial-gradient(closest-side, rgba(255, 214, 140, 0.22), rgba(255, 214, 140, 0));
   opacity: 0; transition: opacity 0.4s ease;
 }
@@ -106,7 +106,7 @@ label input { accent-color: var(--mulled); width: 16px; height: 16px; margin: 0;
   var bookBtn = document.getElementById("book");
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var W, H, S, dpr, L = {}, flakes = [], raf = 0;
-  var TITLE = "IT’S OKAY TO BE DIFFERENT";
+  var TITLE = "it’s okay to be different";
 
   function rng(seed) {
     return function () {
@@ -122,7 +122,7 @@ label input { accent-color: var(--mulled); width: 16px; height: 16px; margin: 0;
     g.closePath();
   }
   var BOOK = ["#6d1f26", "#7f2a22", "#2d4a3a", "#21384f", "#4a2f4f", "#8a6a2c", "#d8cbb0", "#3b5c58", "#5a3a22", "#9b3d2a", "#2f2f45", "#6b6b3a", "#b49a6a", "#40291c"];
-  function bookFont(px) { return "700 " + px + "px " + getComputedStyle(document.documentElement).getPropertyValue("--font-book"); }
+  function bookFont(px, light) { return (light ? "600 " : "700 ") + px + "px " + getComputedStyle(document.documentElement).getPropertyValue("--font-book"); }
 
   function drawScene() {
     var R = rng(1225), g = ctx;
@@ -136,45 +136,53 @@ label input { accent-color: var(--mulled); width: 16px; height: 16px; margin: 0;
     wall.addColorStop(0, "#2a1c15"); wall.addColorStop(1, "#3a271c");
     g.fillStyle = wall; g.fillRect(0, 0, W, tableY);
 
-    // window onto the Christmas market
-    // shelf grid first, so the window sits exactly in one bay
+    // shelf grid first, so the window fits the bays exactly
     var shelfTop = H * 0.05, board = 9 * S, upright = 12 * S;
     var nRows = Math.max(3, Math.floor((tableY - shelfTop - 8) / Math.max(96, Math.min(150, H * 0.15))));
     var shelfH = (tableY - shelfTop - 8) / nRows;
     var rows = []; for (var ri0 = 0; ri0 < nRows; ri0++) rows.push(shelfTop + ri0 * shelfH);
-    var bayW = narrow ? W * 0.56 : Math.max(190, Math.min(270, W / 4.6));
-    var bays = []; for (var x = W * (narrow ? 0.5 : 0.27) - bayW * 1.5; x < W; x += bayW) bays.push(x);
-    var winRows = narrow ? Math.max(1, nRows - 2) : Math.max(2, Math.round(nRows * 0.6));
-    var wx = bays[1] + upright / 2 + 10 * S, ww = bayW - upright - 20 * S;
+    var bayW = narrow ? W * 0.62 : Math.max(190, Math.min(270, W / 4.6));
+    var bays = []; for (var x = W * (narrow ? 0.5 : 0.36) - bayW * 1.5; x < W; x += bayW) bays.push(x);
+    var winBays = narrow ? 1 : 2, winRows = Math.max(2, nRows - 1);
+    var wx = bays[1] + upright / 2 + 10 * S, ww = bayW * winBays - upright - 20 * S;
     var wy = shelfTop + 10 * S, wh = rows[winRows - 1] + shelfH - wy - 22 * S;
-    L.win = { x: wx, y: wy, w: ww, h: wh };
-    function arch(gg, yb) { gg.beginPath(); gg.moveTo(wx, yb); gg.lineTo(wx, wy + ww / 2); gg.arc(wx + ww / 2, wy + ww / 2, ww / 2, Math.PI, 0); gg.lineTo(wx + ww, yb); gg.closePath(); }
+    var archR = Math.min(ww / 2, wh * 0.42);
+    L.win = { x: wx, y: wy, w: ww, h: wh, r: archR };
+    function arch(gg, yb) { gg.beginPath(); gg.moveTo(wx, yb); gg.lineTo(wx, wy + archR); gg.quadraticCurveTo(wx, wy, wx + archR, wy); gg.lineTo(wx + ww - archR, wy); gg.quadraticCurveTo(wx + ww, wy, wx + ww, wy + archR); gg.lineTo(wx + ww, yb); gg.closePath(); }
+    L.arch = arch;
+
+    // the view: a snowy Christmas market at night
     g.save();
     arch(g, wy + wh); g.clip();
     var sky = g.createLinearGradient(0, wy, 0, wy + wh);
-    sky.addColorStop(0, "#0d1628"); sky.addColorStop(1, "#2a3550");
+    sky.addColorStop(0, "#0b1324"); sky.addColorStop(0.7, "#27324c"); sky.addColorStop(1, "#3a4562");
     g.fillStyle = sky; g.fillRect(wx, wy, ww, wh);
-    var ground = wy + wh * 0.82;
-    for (var bx = wx - 10; bx < wx + ww; bx += ww * 0.22) {
-      var bh = wh * (0.22 + R() * 0.2), bw = ww * 0.2;
-      g.fillStyle = "#151c2b";
+    var ground = wy + wh * 0.8;
+    var unit = Math.min(ww, wh) ;
+    for (var bx = wx - 10; bx < wx + ww; bx += unit * 0.2) {
+      var bh = wh * (0.18 + R() * 0.22), bw = unit * 0.19;
+      g.fillStyle = "#18203a";
       g.beginPath(); g.moveTo(bx, ground); g.lineTo(bx, ground - bh); g.lineTo(bx + bw / 2, ground - bh - bw * 0.45); g.lineTo(bx + bw, ground - bh); g.lineTo(bx + bw, ground); g.fill();
-      g.fillStyle = "rgba(255,196,110,0.75)";
-      for (var k = 0; k < 3; k++) if (R() < 0.6) g.fillRect(bx + bw * (0.2 + k * 0.25), ground - bh * (0.35 + R() * 0.4), bw * 0.1, bw * 0.12);
+      g.fillStyle = "#e8edf4"; g.beginPath(); g.moveTo(bx - 2, ground - bh + 2); g.lineTo(bx + bw / 2, ground - bh - bw * 0.45 - 2); g.lineTo(bx + bw + 2, ground - bh + 2); g.lineTo(bx + bw / 2, ground - bh - bw * 0.3); g.fill();
+      g.fillStyle = "rgba(255,196,110,0.8)";
+      for (var k = 0; k < 3; k++) if (R() < 0.6) g.fillRect(bx + bw * (0.2 + k * 0.25), ground - bh * (0.3 + R() * 0.4), bw * 0.1, bw * 0.12);
     }
-    g.fillStyle = "#e9edf2"; g.fillRect(wx, ground, ww, wh);
-    for (var h = 0; h < 3; h++) {
-      var hx = wx + ww * (0.08 + h * 0.32), hw = ww * 0.26, hy = ground - wh * 0.13;
-      g.fillStyle = "#6b4026"; g.fillRect(hx, hy, hw, wh * 0.13);
-      g.fillStyle = "#f2b24a"; g.fillRect(hx + hw * 0.12, hy + wh * 0.03, hw * 0.76, wh * 0.06);
-      g.fillStyle = "#f6f4ef"; g.beginPath(); g.moveTo(hx - hw * 0.12, hy); g.lineTo(hx + hw / 2, hy - wh * 0.08); g.lineTo(hx + hw * 1.12, hy); g.fill();
+    var snow = g.createLinearGradient(0, ground, 0, wy + wh);
+    snow.addColorStop(0, "#dfe6ef"); snow.addColorStop(1, "#f4f6f9");
+    g.fillStyle = snow; g.fillRect(wx, ground, ww, wh);
+    var nh = narrow ? 3 : 5;
+    for (var h = 0; h < nh; h++) {
+      var hw = ww / nh * 0.78, hx = wx + ww / nh * (h + 0.11), hy = ground - unit * 0.09;
+      g.fillStyle = "#6b4026"; g.fillRect(hx, hy, hw, unit * 0.11);
+      g.fillStyle = "#f2b24a"; g.fillRect(hx + hw * 0.12, hy + unit * 0.025, hw * 0.76, unit * 0.05);
+      g.fillStyle = "#f6f4ef"; g.beginPath(); g.moveTo(hx - hw * 0.12, hy); g.lineTo(hx + hw / 2, hy - unit * 0.07); g.lineTo(hx + hw * 1.12, hy); g.fill();
     }
-    for (var i = 0; i <= 14; i++) {
-      var t = i / 14, lx = wx + t * ww, ly = wy + wh * 0.5 + Math.sin(t * Math.PI) * wh * 0.07;
+    for (var i = 0; i <= 24; i++) {
+      var t = i / 24, lx = wx + t * ww, ly = ground - unit * 0.2 + Math.sin(t * Math.PI * (narrow ? 1 : 2)) * unit * 0.04;
       g.fillStyle = "rgba(255,214,120,0.95)"; g.beginPath(); g.arc(lx, ly, 1.6 * S + 0.5, 0, 7); g.fill();
     }
     // a Herrnhut star hanging in the window
-    var sx = wx + ww * 0.5, sy = wy + ww * 0.34, sr = ww * 0.13;
+    var sx = wx + ww * 0.5, sr = Math.min(unit * 0.12, 46 * S), sy = wy + sr * 1.9;
     g.strokeStyle = "rgba(255,255,255,0.35)"; g.lineWidth = 1; g.beginPath(); g.moveTo(sx, wy); g.lineTo(sx, sy - sr); g.stroke();
     var glow = g.createRadialGradient(sx, sy, 1, sx, sy, sr * 2.4);
     glow.addColorStop(0, "rgba(255,210,130,0.45)"); glow.addColorStop(1, "rgba(255,210,130,0)");
@@ -188,59 +196,90 @@ label input { accent-color: var(--mulled); width: 16px; height: 16px; margin: 0;
     }
     g.fillStyle = "#fff1c4"; g.beginPath(); g.arc(sx, sy, sr * 0.3, 0, 7); g.fill();
     g.restore();
-    g.strokeStyle = "#5b3b25"; g.lineWidth = 9 * S; arch(g, wy + wh); g.stroke();
-    g.lineWidth = 4 * S; g.beginPath(); g.moveTo(wx + ww / 2, wy); g.lineTo(wx + ww / 2, wy + wh); g.moveTo(wx, wy + wh * 0.62); g.lineTo(wx + ww, wy + wh * 0.62); g.stroke();
-    g.fillStyle = "#6a4730"; g.fillRect(wx - 12 * S, wy + wh, ww + 24 * S, 10 * S);
+    // frame, mullions and a snowy sill
+    g.strokeStyle = "#5b3b25"; g.lineWidth = 10 * S; arch(g, wy + wh); g.stroke();
+    g.lineWidth = 4.5 * S; g.beginPath();
+    for (var mI = 1; mI < (narrow ? 2 : 4); mI++) { var mxI = wx + ww * mI / (narrow ? 2 : 4); g.moveTo(mxI, wy); g.lineTo(mxI, wy + wh); }
+    g.moveTo(wx, wy + wh * 0.58); g.lineTo(wx + ww, wy + wh * 0.58); g.stroke();
+    g.fillStyle = "#6a4730"; g.fillRect(wx - 14 * S, wy + wh, ww + 28 * S, 11 * S);
+    g.fillStyle = "rgba(240,244,250,0.85)";
+    g.beginPath(); g.moveTo(wx, wy + wh);
+    for (var sI = 0; sI <= 30; sI++) { var su = sI / 30; g.lineTo(wx + su * ww, wy + wh - (2 + Math.abs(Math.sin(su * 9 + 1)) * 5) * S); }
+    g.lineTo(wx + ww, wy + wh); g.closePath(); g.fill();
 
-    // bookshelves
-    function inWindow(x0, x1, y0, y1) { return x1 > wx + 2 && x0 < wx + ww - 2 && y0 < wy + wh + 14 * S; }
-    var targetRow = narrow ? Math.min(winRows, rows.length - 1) : Math.max(0, rows.length - 2), targetX = narrow ? W * 0.5 : W * 0.68;
+    // bookshelves; every book has a title, and one of them is the door
+    var TITLES = ["the trial", "a christmas carol", "the magic mountain", "letters from prague", "the danube", "a history of salt", "winter's tale", "the castle",
+      "night train to vienna", "emma", "middlemarch", "faust", "grimm's tales", "the nutcracker", "mozart's letters", "old vienna", "persuasion", "dubliners",
+      "bohemia", "the snow queen", "walden", "the odyssey", "candide", "siddhartha", "steppenwolf", "notes on absinthe", "the toboggan run", "island days",
+      "the little prince", "the alps in winter", "a room with a view", "the leopard", "jane eyre", "anna karenina", "war and peace", "the brothers karamazov",
+      "the sound of bells", "coffee houses of europe", "the salzburg diaries", "a field guide to ivy", "the good soldier švejk", "the man without qualities",
+      "the radetzky march", "a moveable feast", "the hobbit", "little women", "north and south", "dracula", "frankenstein", "the green fairy"];
+    var LIGHT = { "#d8cbb0": 1, "#b49a6a": 1, "#8a6a2c": 1 };
+    function inWindow(x0, x1, y0) { return x1 > wx + 2 && x0 < wx + ww - 2 && y0 < wy + wh + 14 * S; }
+    var targetRow = Math.max(0, nRows - 2), targetX = narrow ? W * 0.06 : W * 0.86;
+    function titleV(text, bx, top, bw, bh, col, lean) {
+      var fs = Math.min(bw * 0.52, 12.5 * S);
+      g.font = bookFont(fs, true);
+      var tw = g.measureText(text).width, room = bh * 0.78;
+      if (tw > room) { fs *= room / tw; g.font = bookFont(fs, true); }
+      if (fs < 5) return false;
+      g.save(); g.translate(bx + bw / 2, top + bh / 2); g.rotate(Math.PI / 2);
+      g.textAlign = "center"; g.textBaseline = "middle";
+      g.fillStyle = LIGHT[col] ? "rgba(60,36,20,0.85)" : "rgba(222,198,132,0.88)";
+      g.fillText(text, 0, fs * 0.06);
+      g.restore();
+      return true;
+    }
+    var tIdx = (R() * TITLES.length) | 0;
+    function nextTitle() { tIdx = (tIdx + 7) % TITLES.length; return TITLES[tIdx]; }
 
     rows.forEach(function (ry, ri) {
       bays.forEach(function (bx0) {
         var x0 = bx0 + upright / 2, x1 = bx0 + bayW - upright / 2;
-        if (inWindow(x0, x1, ry, ry + shelfH)) return;
+        if (inWindow(x0, x1, ry)) return;
         var back = g.createLinearGradient(0, ry, 0, ry + shelfH);
         back.addColorStop(0, "#140d09"); back.addColorStop(1, "#24170f");
         g.fillStyle = back; g.fillRect(x0, ry, x1 - x0, shelfH);
         var bx = x0 + 3 * S, floor = ry + shelfH - board;
-        var special = ri === targetRow && targetX >= bx0 && targetX < bx0 + bayW;
-        var stackAt = special ? x0 + 8 * S : (R() < 0.25 ? x0 + (x1 - x0) * (0.2 + R() * 0.5) : -1);
+        var special = ri === targetRow && targetX >= bx0 && targetX < bx0 + bayW && !L.book;
+        var heroAt = special ? Math.max(x0, 8) + (narrow ? 4 * S : (Math.min(x1, W) - Math.max(x0, 8)) * 0.4) : Infinity;
+        var stackAt = R() < 0.25 ? x0 + (x1 - x0) * (0.15 + R() * 0.55) : -1;
         while (bx < x1 - 6 * S) {
-          if (stackAt > 0 && bx >= stackAt) {
-            // books lying on their sides
-            var sw = Math.min(x1 - bx - 4 * S, special ? (x1 - x0) * 0.9 : (70 + R() * 50) * S);
-            var sy0 = floor, n = special ? 3 : 2 + (R() * 3 | 0);
+          var hero = bx >= heroAt && !L.book;
+          if (!hero && stackAt > 0 && bx >= stackAt && !(special && bx < heroAt + 40 && bx > heroAt - 120)) {
+            var sw = Math.min(x1 - bx - 4 * S, (78 + R() * 50) * S), sy0 = floor, n = 2 + (R() * 3 | 0);
             for (var s = 0; s < n; s++) {
-              var hero = special && s === 1;
-              var th = hero ? Math.max(19, 19 * S) : (9 + R() * 8) * S;
-              var inset = hero ? 0 : (R() * 10 - 5) * S, swk = sw - Math.abs(inset) - (hero ? 0 : R() * 14 * S);
-              g.fillStyle = hero ? "#4c1d24" : BOOK[(R() * BOOK.length) | 0];
-              g.fillRect(bx + Math.max(0, inset), sy0 - th, swk, th);
-              g.fillStyle = "rgba(255,255,255,0.08)"; g.fillRect(bx + Math.max(0, inset), sy0 - th, swk, 1.2 * S);
-              g.fillStyle = "rgba(0,0,0,0.25)"; g.fillRect(bx + Math.max(0, inset), sy0 - 1.2 * S, swk, 1.2 * S);
-              if (hero) L.book = { x: bx + Math.max(0, inset), y: sy0 - th, w: swk, h: th };
-              else if (R() < 0.6) { g.fillStyle = "rgba(217,191,122,0.55)"; g.fillRect(bx + Math.max(0, inset) + swk * 0.15, sy0 - th / 2 - 0.6 * S, swk * (0.3 + R() * 0.4), 1.2 * S); }
+              var th = (11 + R() * 7) * S, inset = (R() * 10 - 5) * S, swk = sw - Math.abs(inset) - R() * 14 * S;
+              var sc = BOOK[(R() * BOOK.length) | 0], sxx = bx + Math.max(0, inset);
+              g.fillStyle = sc; g.fillRect(sxx, sy0 - th, swk, th);
+              g.fillStyle = "rgba(255,255,255,0.08)"; g.fillRect(sxx, sy0 - th, swk, 1.2 * S);
+              g.fillStyle = "rgba(0,0,0,0.25)"; g.fillRect(sxx, sy0 - 1.2 * S, swk, 1.2 * S);
+              var st = nextTitle(), fsh = th * 0.56;
+              g.font = bookFont(fsh, true);
+              var tw0 = g.measureText(st).width;
+              if (tw0 > swk * 0.8) { fsh *= swk * 0.8 / tw0; g.font = bookFont(fsh, true); }
+              if (fsh >= 5) { g.textAlign = "center"; g.textBaseline = "middle"; g.fillStyle = LIGHT[sc] ? "rgba(60,36,20,0.85)" : "rgba(222,198,132,0.88)"; g.fillText(st, sxx + swk / 2, sy0 - th / 2 + fsh * 0.06); }
               sy0 -= th;
             }
             bx += sw + 4 * S; stackAt = -1; continue;
           }
-          var bw = (10 + R() * 16) * S, bh = shelfH * (0.58 + R() * 0.32);
+          var bw = hero ? Math.max(19, 21 * S) : (11 + R() * 15) * S;
+          var bh = hero ? shelfH * 0.84 : shelfH * (0.6 + R() * 0.3);
           if (bx + bw > x1 - 3 * S) break;
-          var lean = R() < 0.06 && bx + bw + 30 * S < x1;
+          var lean = !hero && R() < 0.06 && bx + bw + 30 * S < x1;
+          var col = hero ? "#3b5c58" : BOOK[(R() * BOOK.length) | 0];
           g.save();
           if (lean) { g.translate(bx, floor); g.rotate(-0.22); g.translate(-bx, -floor); }
-          g.fillStyle = BOOK[(R() * BOOK.length) | 0]; g.fillRect(bx, floor - bh, bw, bh);
+          g.fillStyle = col; g.fillRect(bx, floor - bh, bw, bh);
           var shade = g.createLinearGradient(bx, 0, bx + bw, 0);
           shade.addColorStop(0, "rgba(255,255,255,0.10)"); shade.addColorStop(0.35, "rgba(255,255,255,0)"); shade.addColorStop(1, "rgba(0,0,0,0.30)");
           g.fillStyle = shade; g.fillRect(bx, floor - bh, bw, bh);
-          if (R() < 0.75) {
-            g.fillStyle = "rgba(217,191,122," + (0.35 + R() * 0.35) + ")";
-            g.fillRect(bx + 1, floor - bh + bh * 0.1, bw - 2, 1.3 * S);
-            g.fillRect(bx + 1, floor - bh * 0.18, bw - 2, 1.3 * S);
-            if (R() < 0.5) g.fillRect(bx + bw * 0.35, floor - bh * 0.7, bw * 0.3, bh * 0.28);
-          }
+          g.fillStyle = "rgba(217,191,122,0.55)";
+          g.fillRect(bx + 1, floor - bh + bh * 0.06, bw - 2, 1.2 * S);
+          g.fillRect(bx + 1, floor - bh * 0.07, bw - 2, 1.2 * S);
+          titleV(hero ? TITLE : nextTitle(), bx, floor - bh + bh * 0.04, bw, bh * 0.92, col, lean);
           g.restore();
+          if (hero) L.book = { x: bx, y: floor - bh, w: bw, h: bh };
           bx += bw + (R() < 0.12 ? (8 + R() * 18) * S : 0.6 * S) + (lean ? 12 * S : 0);
         }
         var bd = g.createLinearGradient(0, floor, 0, floor + board);
@@ -252,23 +291,8 @@ label input { accent-color: var(--mulled); width: 16px; height: 16px; margin: 0;
       var up = g.createLinearGradient(bx0 - upright / 2, 0, bx0 + upright / 2, 0);
       up.addColorStop(0, "#4a301f"); up.addColorStop(0.5, "#6e4a30"); up.addColorStop(1, "#3c2718");
       g.fillStyle = up;
-      rows.forEach(function (ry) { if (!inWindow(bx0 - upright, bx0 + upright, ry, ry + shelfH)) g.fillRect(bx0 - upright / 2, ry, upright, shelfH); });
+      rows.forEach(function (ry) { if (!inWindow(bx0 - upright, bx0 + upright, ry)) g.fillRect(bx0 - upright / 2, ry, upright, shelfH); });
     });
-
-    // the one spine with a readable title
-    if (L.book) {
-      var bk = L.book, fs = bk.h * 0.58;
-      g.font = bookFont(fs);
-      var tw = g.measureText(TITLE).width;
-      if (tw > bk.w * 0.86) { fs *= bk.w * 0.86 / tw; g.font = bookFont(fs); }
-      g.textBaseline = "middle"; g.textAlign = "center";
-      var cx = bk.x + bk.w / 2, cy = bk.y + bk.h / 2 + fs * 0.06;
-      g.fillStyle = "rgba(0,0,0,0.5)"; g.fillText(TITLE, cx + 0.6, cy + 0.8);
-      g.fillStyle = "#d9bf7a"; g.fillText(TITLE, cx, cy);
-      g.fillStyle = "rgba(217,191,122,0.7)";
-      g.fillRect(bk.x + 3 * S, bk.y + 2.5, 1.2 * S, bk.h - 5);
-      g.fillRect(bk.x + bk.w - 4.2 * S, bk.y + 2.5, 1.2 * S, bk.h - 5);
-    }
 
     // fairy-light garland along the top shelf
     for (var gi = 0; gi < 2; gi++) {
@@ -335,18 +359,17 @@ label input { accent-color: var(--mulled); width: 16px; height: 16px; margin: 0;
   function initFx() {
     var R = rng(31), w = L.win;
     flakes = [];
-    for (var i = 0; i < Math.round(w.w * w.h / 2600); i++) flakes.push({ x: w.x + R() * w.w, y: w.y + R() * w.h, r: 0.6 + R() * 1.6, v: 8 + R() * 18, d: R() * 6.28 });
+    for (var i = 0; i < Math.round(w.w * w.h / 1100); i++) { var near = R() < 0.3; flakes.push({ x: w.x + R() * w.w, y: w.y + R() * w.h, r: near ? 1.6 + R() * 1.6 : 0.6 + R() * 1.1, v: near ? 30 + R() * 25 : 12 + R() * 14, d: R() * 6.28, sw: near ? 9 : 4, a: near ? 0.95 : 0.7 }); }
   }
   function drawFx(t) {
     fc.setTransform(dpr, 0, 0, dpr, 0, 0);
     fc.clearRect(0, 0, W, H);
     var w = L.win;
     fc.save();
-    fc.beginPath(); fc.moveTo(w.x, w.y + w.h * 0.82); fc.lineTo(w.x, w.y + w.w / 2); fc.arc(w.x + w.w / 2, w.y + w.w / 2, w.w / 2, Math.PI, 0); fc.lineTo(w.x + w.w, w.y + w.h * 0.82); fc.closePath(); fc.clip();
-    fc.fillStyle = "rgba(255,255,255,0.85)";
+    L.arch(fc, w.y + w.h); fc.clip();
     flakes.forEach(function (f) {
-      var y = w.y + ((f.y - w.y + f.v * t) % w.h), x = f.x + Math.sin(t * 0.8 + f.d) * 4;
-      fc.beginPath(); fc.arc(x, y, f.r, 0, 7); fc.fill();
+      var y = w.y + ((f.y - w.y + f.v * t) % w.h), x = f.x + Math.sin(t * 0.7 + f.d) * f.sw;
+      fc.fillStyle = "rgba(255,255,255," + f.a + ")"; fc.beginPath(); fc.arc(x, y, f.r, 0, 7); fc.fill();
     });
     fc.restore();
     var st = L.steam;
@@ -375,7 +398,7 @@ label input { accent-color: var(--mulled); width: 16px; height: 16px; margin: 0;
     L = {};
     drawScene();
     if (L.book) {
-      var px = 8, py = Math.max(8, (44 - L.book.h) / 2);
+      var px = Math.max(6, (44 - L.book.w) / 2), py = 6;
       bookBtn.style.left = (L.book.x - px) + "px"; bookBtn.style.top = (L.book.y - py) + "px";
       bookBtn.style.width = (L.book.w + px * 2) + "px"; bookBtn.style.height = (L.book.h + py * 2) + "px";
     }
@@ -401,7 +424,7 @@ label input { accent-color: var(--mulled); width: 16px; height: 16px; margin: 0;
   }
   function b64(s) { var b = atob(s), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
   function unb64(buf) { var u = new Uint8Array(buf), s = ""; for (var i = 0; i < u.length; i++) s += String.fromCharCode(u[i]); return btoa(s); }
-  function norm(p) { return p.trim().toLowerCase().replace(/[\s_-]+/g, "-"); }
+  function norm(p) { return p.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase().replace(/[\s_-]+/g, "-"); }
   function derive(p, bx, extractable) {
     return crypto.subtle.importKey("raw", new TextEncoder().encode(norm(p)), "PBKDF2", false, ["deriveKey"]).then(function (base) {
       return crypto.subtle.deriveKey({ name: "PBKDF2", hash: "SHA-256", salt: b64(bx.salt), iterations: bx.iter }, base, { name: "AES-GCM", length: 256 }, extractable, ["decrypt"]);
