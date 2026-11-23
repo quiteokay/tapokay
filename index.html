@@ -435,7 +435,16 @@ label input { accent-color: var(--mulled); width: 16px; height: 16px; margin: 0;
     });
   }
   function openWith(key, bx) {
-    return crypto.subtle.decrypt({ name: "AES-GCM", iv: b64(bx.iv) }, key, b64(bx.ct)).then(function (buf) { return new TextDecoder().decode(buf); });
+    return crypto.subtle.decrypt({ name: "AES-GCM", iv: b64(bx.iv) }, key, b64(bx.ct)).then(function (buf) {
+      try { sessionStorage.setItem("okay.iv", bx.iv); } catch (e) {}
+      return new TextDecoder().decode(buf);
+    });
+  }
+  /* key kept for this tab only, so Refresh and reloads stay open until "Lock now" */
+  function keepSession(salt, rawB64) { try { sessionStorage.setItem("okay.session", JSON.stringify({ salt: salt, key: rawB64 })); } catch (e) {} }
+  function session() { try { return JSON.parse(sessionStorage.getItem("okay.session") || "null"); } catch (e) { return null; } }
+  function openSaved(s, bx) {
+    return crypto.subtle.importKey("raw", b64(s.key), { name: "AES-GCM" }, false, ["decrypt"]).then(function (k) { return openWith(k, bx); });
   }
   function enterGarden(html) { cancelAnimationFrame(raf); document.open(); document.write(html); document.close(); }
   function saved() { try { return JSON.parse(localStorage.getItem("okay.key") || "null"); } catch (e) { return null; } }
@@ -451,14 +460,22 @@ label input { accent-color: var(--mulled); width: 16px; height: 16px; margin: 0;
     var s = saved();
     box().then(function (bx) {
       if (s && s.salt === bx.salt) {
-        return crypto.subtle.importKey("raw", b64(s.key), { name: "AES-GCM" }, false, ["decrypt"])
-          .then(function (k) { return openWith(k, bx); })
-          .then(enterGarden)
+        return openSaved(s, bx)
+          .then(function (html) { keepSession(s.salt, s.key); enterGarden(html); })
           .catch(function () { try { localStorage.removeItem("okay.key"); } catch (e) {} showGate(); });
       }
       showGate();
     }).catch(function () { showGate(); msg.textContent = "The page couldn't be reached. Check your connection and try again."; });
   });
+  /* already open in this tab (Refresh, or a reload): go straight back in */
+  (function () {
+    var s = session();
+    if (!s || !window.crypto || !crypto.subtle) return;
+    box().then(function (bx) {
+      if (s.salt !== bx.salt) throw new Error("stale");
+      return openSaved(s, bx);
+    }).then(enterGarden).catch(function () { try { sessionStorage.removeItem("okay.session"); } catch (e) {} });
+  })();
   document.getElementById("close").addEventListener("click", hideGate);
   veil.addEventListener("click", hideGate);
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !gate.hidden) hideGate(); });
@@ -468,12 +485,13 @@ label input { accent-color: var(--mulled); width: 16px; height: 16px; margin: 0;
     if (!pass.value.trim()) return;
     enter.disabled = true; msg.textContent = "";
     var bx;
-    box().then(function (b) { bx = b; return derive(pass.value, bx, remember.checked); })
+    box().then(function (b) { bx = b; return derive(pass.value, bx, true); })
       .then(function (key) {
         return openWith(key, bx).then(function (html) {
-          if (!remember.checked) return html;
           return crypto.subtle.exportKey("raw", key).then(function (raw) {
-            try { localStorage.setItem("okay.key", JSON.stringify({ salt: bx.salt, key: unb64(raw) })); } catch (e) {}
+            var k = unb64(raw);
+            keepSession(bx.salt, k);
+            if (remember.checked) { try { localStorage.setItem("okay.key", JSON.stringify({ salt: bx.salt, key: k })); } catch (e) {} }
             return html;
           });
         });
