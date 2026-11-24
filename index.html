@@ -422,8 +422,10 @@ label input { accent-color: var(--mulled); width: 16px; height: 16px; margin: 0;
   var pass = document.getElementById("pass"), msg = document.getElementById("msg"), enter = document.getElementById("enter");
   var remember = document.getElementById("remember");
   var boxP = null;
+  /* arrived from "Check for updates": tidy the address bar */
+  try { if (location.search) history.replaceState(null, "", "/" + location.hash); } catch (e) {}
   function box() {
-    if (!boxP) boxP = fetch("garden.json", { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error("missing"); return r.json(); });
+    if (!boxP) boxP = fetch("garden.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("missing"); return r.json(); });
     return boxP;
   }
   function b64(s) { var b = atob(s), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
