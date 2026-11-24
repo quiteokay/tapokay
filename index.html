@@ -458,6 +458,7 @@ label input { accent-color: var(--mulled); width: 16px; height: 16px; margin: 0;
   }
 
   bookBtn.addEventListener("click", function () {
+    try { sessionStorage.removeItem("okay.locked"); } catch (e) {}
     if (!window.crypto || !crypto.subtle) { showGate(); msg.textContent = "This browser can't open the book. Try a current Safari, Chrome or Firefox."; return; }
     var s = saved();
     box().then(function (bx) {
@@ -472,11 +473,14 @@ label input { accent-color: var(--mulled); width: 16px; height: 16px; margin: 0;
   /* already open in this tab (Refresh, or a reload): go straight back in */
   (function () {
     var s = session();
+    /* a remembered device opens straight in, unless "Lock now" was chosen in this tab */
+    var locked = false; try { locked = sessionStorage.getItem("okay.locked") === "1"; } catch (e) {}
+    if (!s && !locked) { var r = saved(); if (r) s = r; }
     if (!s || !window.crypto || !crypto.subtle) return;
     box().then(function (bx) {
       if (s.salt !== bx.salt) throw new Error("stale");
       return openSaved(s, bx);
-    }).then(enterGarden).catch(function () { try { sessionStorage.removeItem("okay.session"); } catch (e) {} });
+    }).then(function (html) { keepSession(s.salt, s.key); enterGarden(html); }).catch(function () { try { sessionStorage.removeItem("okay.session"); } catch (e) {} });
   })();
   document.getElementById("close").addEventListener("click", hideGate);
   veil.addEventListener("click", hideGate);
